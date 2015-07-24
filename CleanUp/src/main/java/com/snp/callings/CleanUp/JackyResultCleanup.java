@@ -96,10 +96,10 @@ public class JackyResultCleanup {
 				if (chr.startsWith("chr")){
 					chr = chr.substring(3);
 				}
-				String[] content = {chr + ":" + combinedCsvReader.get("Start"), combinedCsvReader.get("snp138"), combinedCsvReader.get("Gene.refGene"), 
-						combinedCsvReader.get("coverage"), "",  combinedCsvReader.get("GeneDetail.refGene"), combinedCsvReader.get("AAChange.refGene"), combinedCsvReader.get("ExonicFunc.refGene"), "",
-						combinedCsvReader.get("zygosity"), combinedCsvReader.get("SIFT_pred"), combinedCsvReader.get("Polyphen2_HDIV_pred"), combinedCsvReader.get("Polyphen2_HVAR_pred"),combinedCsvReader.get("Ref"),
-						combinedCsvReader.get("Alt"), combinedCsvReader.get("Func.refGene")};
+				String[] content = {chr + ":" + clean(combinedCsvReader.get("Start")), clean(combinedCsvReader.get("snp138")), clean(combinedCsvReader.get("Gene.refGene")), 
+						clean(combinedCsvReader.get("coverage")), "",  clean(combinedCsvReader.get("GeneDetail.refGene")), clean(combinedCsvReader.get("AAChange.refGene")), clean(combinedCsvReader.get("ExonicFunc.refGene")), "",
+						clean(combinedCsvReader.get("zygosity")), clean(combinedCsvReader.get("SIFT_pred")), clean(combinedCsvReader.get("Polyphen2_HDIV_pred")), clean(combinedCsvReader.get("Polyphen2_HVAR_pred")),clean(combinedCsvReader.get("Ref")),
+						clean(combinedCsvReader.get("Alt")), clean(combinedCsvReader.get("Func.refGene"))};
 				finalOutputWriter.writeRecord(content);
 			}
 			
@@ -155,7 +155,15 @@ public class JackyResultCleanup {
 			combinedOutput.writeRecord(contents.toArray(strings));
 		}
 	}
-
+	
+	private String clean(String input)
+	{
+		if (input.equals("."))
+		{
+			return "";
+		}
+		return input.replace(',', ';');
+	}
 
 	public static void main( String[] args )
 	{
