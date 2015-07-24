@@ -19,7 +19,7 @@ import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 import com.snp.callings.tools.VCFDataStore;
 
-
+//
 public class JackyResultCleanup {
 
 	private String subjectId;
