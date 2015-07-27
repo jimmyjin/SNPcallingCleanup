@@ -17,43 +17,37 @@ import java.util.Map;
 
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
-import com.snp.callings.tools.VCFDataStore;
+import com.snp.callings.tools.VCFLookUpDataSource;
 
 // The main class to handle the cleanup
 public class JackyResultCleanup {
 
-	private String subjectId;
-	private String directory;
 	private String snpVcf;
 	private String snpCsv;
 	private String indelsVcf;
 	private String indelsCsv;
 	private String finalOutput;
-	private String combinedFile;
+	private String combinedTempFile;
 
 	
 	public JackyResultCleanup(String subjectId, String directory)
 	{
-		this.subjectId = subjectId;
-		this.directory = directory;
 		snpVcf = directory + "/" + subjectId + "_snps_annovar.hg19_multianno.vcf";
 		snpCsv = directory + "/" + subjectId + "_snps_annovar.hg19_multianno.csv";
 		indelsVcf = directory + "/" + subjectId + "_indels_annovar.hg19_multianno.vcf";
 		indelsCsv = directory + "/" + subjectId + "_indels_annovar.hg19_multianno.csv";
 		finalOutput = directory + "/" + subjectId + "_variant_calling_final_result.csv";
-		combinedFile = directory + "/" + subjectId + "_combined_temp.csv";
+		combinedTempFile = directory + "/" + subjectId + "_combined_temp.csv";
 	}
 
 	public void appendColumns()
 	{
-
-		// snps
 		try {
 			CsvReader snpCsvReader = new CsvReader(snpCsv);
-			VCFDataStore snpVcfDataStore = new VCFDataStore(snpVcf);
+			VCFLookUpDataSource snpVcfDataStore = new VCFLookUpDataSource(snpVcf);
 			CsvReader indelsCsvReader = new CsvReader(indelsCsv);
-			VCFDataStore indelsVcfDataStore = new VCFDataStore(indelsVcf);
-			CsvWriter combinedOutput =new CsvWriter(combinedFile,',',Charset.forName("UTF-8"));
+			VCFLookUpDataSource indelsVcfDataStore = new VCFLookUpDataSource(indelsVcf);
+			CsvWriter combinedOutput =new CsvWriter(combinedTempFile,',',Charset.forName("UTF-8"));
 			
 			// read csv header
 			snpCsvReader.readHeaders();
@@ -62,7 +56,7 @@ public class JackyResultCleanup {
 			Collections.addAll(headers, snpCsvReader.getHeaders());
 			headers.add("zygosity");
 			headers.add("coverage");
-			headers.add("src"); // for debug
+			headers.add("src"); // for debug purpose, to rename todo
 			String[] headerstring = new String[headers.size()];
 			combinedOutput.writeRecord(headers.toArray(headerstring));
 
@@ -85,7 +79,7 @@ public class JackyResultCleanup {
 		String[] header = {"chr_position","dbsnp_id","gene","coverage","exon_number","hgvs_coding","hgvs_protein","variant_result_type",
 				"transcript_accession","zygosity","sift","polyphen2_hdiv","polyphen2_hvar","ref","alt","variant_location"};
 		try {
-			CsvReader combinedCsvReader = new CsvReader(combinedFile);
+			CsvReader combinedCsvReader = new CsvReader(combinedTempFile);
 			CsvWriter finalOutputWriter =new CsvWriter(finalOutput,',',Charset.forName("UTF-8"));
 			combinedCsvReader.readHeaders();
 			finalOutputWriter.writeRecord(header);
@@ -112,7 +106,7 @@ public class JackyResultCleanup {
 		}
 	}
 
-	private void generateOutput(CsvReader CsvReader, CsvWriter combinedOutput, VCFDataStore vcfDataStore) throws IOException
+	private void generateOutput(CsvReader CsvReader, CsvWriter combinedOutput, VCFLookUpDataSource vcfDataStore) throws IOException
 	{
 		Map<String, String> info;
 		while (CsvReader.readRecord())
@@ -167,6 +161,11 @@ public class JackyResultCleanup {
 
 	public static void main( String[] args )
 	{
+//		if (args.length != 3)
+//		{
+//			System.out.println("The use of the tool");
+//			System.exit(1);
+//		}
 		JackyResultCleanup j = new JackyResultCleanup("WGC033595U_combined", "c:/Users/sjin1/Downloads/jackyfiles/jackyfiles");
 		j.appendColumns();
 		j.mappingColumns();
