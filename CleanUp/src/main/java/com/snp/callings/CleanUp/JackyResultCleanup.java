@@ -132,10 +132,10 @@ public class JackyResultCleanup {
 			if (info != null)
 			{
 				String af = info.get("AF");
-				if (af.equals("1.00"))
+				if (af.startsWith("1.00"))
 				{
 					zygosity = "homozygous";
-				} else if (af.equals("0.500")) {
+				} else if (af.startsWith("0.500")) {
 					zygosity = "heterozygous";
 				}
 				coverage= info.get("DP");
